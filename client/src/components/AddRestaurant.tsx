@@ -1,11 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import RestaurantFinder from "../apis/RestaurantFinder";
+import { RestaurantsContext } from "../contexts/RestaurantsContexts";
 
 interface AddRestaurantProps {}
 
 export const AddRestaurant: React.FC<AddRestaurantProps> = ({}) => {
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
-  const [priceRange, setPriceRange] = useState("");
+  const [priceRange, setPriceRange] = useState("Price range");
+  const { addRestaurants } = useContext(RestaurantsContext);
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    try {
+      const response = await RestaurantFinder.post("/", {
+        name: name,
+        location: location,
+        price_range: priceRange,
+      });
+      addRestaurants(response.data.data.restaurant);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div className="mb-4">
       <form>
@@ -29,7 +46,12 @@ export const AddRestaurant: React.FC<AddRestaurantProps> = ({}) => {
             />
           </div>
           <div className="col">
-            <select className="custom-select" id="inputGroupSelect02">
+            <select
+              value={priceRange}
+              onChange={(e) => setPriceRange(e.target.value)}
+              className="custom-select"
+              id="inputGroupSelect02"
+            >
               <option disabled>Price Range</option>
               <option value="1">$</option>
               <option value="2">$$</option>
@@ -38,7 +60,13 @@ export const AddRestaurant: React.FC<AddRestaurantProps> = ({}) => {
               <option value="5">$$$$$</option>
             </select>
           </div>
-          <button className="btn btn-primary">Add</button>
+          <button
+            onClick={handleSubmit}
+            type="submit"
+            className="btn btn-primary"
+          >
+            Add
+          </button>
         </div>
       </form>
     </div>

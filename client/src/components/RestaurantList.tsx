@@ -1,4 +1,5 @@
 import React, { useEffect, useContext } from "react";
+import { idText } from "typescript";
 import RestaurantFinder from "../apis/RestaurantFinder";
 import { RestaurantsContext } from "../contexts/RestaurantsContexts";
 
@@ -11,11 +12,24 @@ export const RestaurantList: React.FC<RestaurantListProps> = ({}) => {
       try {
         const response = await RestaurantFinder.get("/");
         setRestaurants(response.data.data.restaurants);
-      } catch (e) {
-        console.error(e);
+      } catch (err) {
+        console.log(err);
       }
     })();
   }, []);
+
+  const handleDelete = async (id: number) => {
+    try {
+      const response = await RestaurantFinder.delete(`/${id}`);
+      setRestaurants(
+        restaurants.filter((restaurant: any) => {
+          return restaurant.id !== id;
+        })
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <div className="list-group">
@@ -43,23 +57,16 @@ export const RestaurantList: React.FC<RestaurantListProps> = ({}) => {
                     <button className="btn btn-warning">Update</button>
                   </td>
                   <td>
-                    <button className="btn btn-danger">Delete</button>
+                    <button
+                      onClick={() => handleDelete(restaurant.id)}
+                      className="btn btn-danger"
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               );
             })}
-          {/* <tr>
-            <td>McDonalds</td>
-            <td>New York</td>
-            <td>$$</td>
-            <td>Rating</td>
-            <td>
-              <button className="btn btn-warning">Update</button>
-            </td>
-            <td>
-              <button className="btn btn-danger">Delete</button>
-            </td>
-          </tr> */}
         </tbody>
       </table>
     </div>
