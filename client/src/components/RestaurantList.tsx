@@ -1,10 +1,21 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import RestaurantFinder from "../apis/RestaurantFinder";
+import { RestaurantsContext } from "../contexts/RestaurantsContexts";
 
 interface RestaurantListProps {}
 
 export const RestaurantList: React.FC<RestaurantListProps> = ({}) => {
-  useEffect(() => {}, []);
+  const { restaurants, setRestaurants } = useContext(RestaurantsContext);
+  useEffect(() => {
+    (async function () {
+      try {
+        const response = await RestaurantFinder.get("/");
+        setRestaurants(response.data.data.restaurants);
+      } catch (e) {
+        console.error(e);
+      }
+    })();
+  }, []);
 
   return (
     <div className="list-group">
@@ -20,7 +31,24 @@ export const RestaurantList: React.FC<RestaurantListProps> = ({}) => {
           </tr>
         </thead>
         <tbody>
-          <tr>
+          {restaurants &&
+            restaurants.map((restaurant: any) => {
+              return (
+                <tr key={restaurant.id}>
+                  <td>{restaurant.name}</td>
+                  <td>{restaurant.location}</td>
+                  <td>{"$".repeat(restaurant.price_range)}</td>
+                  <td>reviews</td>
+                  <td>
+                    <button className="btn btn-warning">Update</button>
+                  </td>
+                  <td>
+                    <button className="btn btn-danger">Delete</button>
+                  </td>
+                </tr>
+              );
+            })}
+          {/* <tr>
             <td>McDonalds</td>
             <td>New York</td>
             <td>$$</td>
@@ -31,19 +59,7 @@ export const RestaurantList: React.FC<RestaurantListProps> = ({}) => {
             <td>
               <button className="btn btn-danger">Delete</button>
             </td>
-          </tr>
-          <tr>
-            <td>McDonalds</td>
-            <td>New York</td>
-            <td>$$</td>
-            <td>Rating</td>
-            <td>
-              <button className="btn btn-warning">Update</button>
-            </td>
-            <td>
-              <button className="btn btn-danger">Delete</button>
-            </td>
-          </tr>
+          </tr> */}
         </tbody>
       </table>
     </div>

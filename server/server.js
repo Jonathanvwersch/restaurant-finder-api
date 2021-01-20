@@ -1,18 +1,18 @@
 require("dotenv").config();
 const express = require("express");
-const morgan = require("morgan");
+const cors = require("cors")
 
 const app = express();
 const db = require("./db");
 
+app.use(cors())
 app.use(express.json());
 
 // Get all restaurants
 app.get("/api/v1/restaurants", async (req, res) => {
   try {
     const results = await db.query("select * from restaurants");
-    console.log(results);
-
+    
     res.status(200).json({
       status: "success",
       de: results.rows.length,
@@ -21,7 +21,6 @@ app.get("/api/v1/restaurants", async (req, res) => {
       },
     });
   } catch (err) {
-    console.log(err);
   }
 });
 
@@ -39,7 +38,6 @@ app.get("/api/v1/restaurants/:id", async (req, res) => {
       },
     });
   } catch (err) {
-    console.log(err);
   }
 });
 
@@ -51,15 +49,13 @@ app.post("/api/v1/restaurants", async (req, res) => {
       "INSERT INTO restaurants (name, location, price_range) values ($1, $2, $3) returning *",
       [req.body.name, req.body.location, req.body.price_range]
     );
-    console.log(results);
-    res.status(201).json({
+        res.status(201).json({
       status: "success",
       data: {
         restaurant: results.rows[0],
       },
     });
   } catch (err) {
-    console.log(err);
   }
 });
 
@@ -77,7 +73,6 @@ app.put("/api/v1/restaurants/:id", async (req, res) => {
       },
     });
   } catch (err) {
-    console.log(err);
   }
 });
 
@@ -91,7 +86,6 @@ app.delete("/api/v1/restaurants/:id", async (req, res) => {
       status: "success",
     });
   } catch (err) {
-    console.log(err);
   }
 });
 
