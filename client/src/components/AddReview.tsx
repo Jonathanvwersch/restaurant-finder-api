@@ -14,7 +14,7 @@ export const AddReview: React.FC<AddReviewProps> = ({}) => {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     try {
-      const response = await RestaurantFinder.post(`/${id}/addReview`, {
+      await RestaurantFinder.post(`/${id}/addReview`, {
         name: name,
         review: review,
         rating: rating,

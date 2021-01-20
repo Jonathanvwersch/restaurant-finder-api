@@ -1,7 +1,9 @@
+import { spawn } from "child_process";
 import React, { useEffect, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import RestaurantFinder from "../apis/RestaurantFinder";
 import { RestaurantsContext } from "../contexts/RestaurantsContexts";
+import { StarRating } from "./StarRating";
 
 interface RestaurantListProps {}
 
@@ -43,6 +45,19 @@ export const RestaurantList: React.FC<RestaurantListProps> = ({}) => {
     history.push(`restaurants/${id}`);
   };
 
+  const renderRating = (restaurant: any) => {
+    if (!restaurant.count) {
+      return <span className="text-warning">0 reviews</span>;
+    } else {
+      return (
+        <>
+          <StarRating rating={restaurant.average_rating} />
+          <span className="text-warning ml-1">({restaurant.count})</span>
+        </>
+      );
+    }
+  };
+
   return (
     <div className="list-group">
       <table className="table table-hover table-dark">
@@ -67,7 +82,7 @@ export const RestaurantList: React.FC<RestaurantListProps> = ({}) => {
                   <td>{restaurant.name}</td>
                   <td>{restaurant.location}</td>
                   <td>{"$".repeat(restaurant.price_range)}</td>
-                  <td>reviews</td>
+                  <td>{renderRating(restaurant)}</td>
                   <td>
                     <button
                       onClick={(e) => handleUpdate(e, restaurant.id)}
