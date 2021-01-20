@@ -1,4 +1,5 @@
 import React, { useEffect, useContext } from "react";
+import { useHistory } from "react-router-dom";
 import { idText } from "typescript";
 import RestaurantFinder from "../apis/RestaurantFinder";
 import { RestaurantsContext } from "../contexts/RestaurantsContexts";
@@ -7,6 +8,7 @@ interface RestaurantListProps {}
 
 export const RestaurantList: React.FC<RestaurantListProps> = ({}) => {
   const { restaurants, setRestaurants } = useContext(RestaurantsContext);
+  let history = useHistory();
   useEffect(() => {
     (async function () {
       try {
@@ -29,6 +31,10 @@ export const RestaurantList: React.FC<RestaurantListProps> = ({}) => {
     } catch (err) {
       console.log(err);
     }
+  };
+
+  const handleUpdate = async (id: number) => {
+    history.push(`/restaurants/${id}/update`);
   };
 
   return (
@@ -54,7 +60,12 @@ export const RestaurantList: React.FC<RestaurantListProps> = ({}) => {
                   <td>{"$".repeat(restaurant.price_range)}</td>
                   <td>reviews</td>
                   <td>
-                    <button className="btn btn-warning">Update</button>
+                    <button
+                      onClick={() => handleUpdate(restaurant.id)}
+                      className="btn btn-warning"
+                    >
+                      Update
+                    </button>
                   </td>
                   <td>
                     <button
