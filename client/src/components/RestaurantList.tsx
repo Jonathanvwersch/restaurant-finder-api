@@ -1,6 +1,5 @@
 import React, { useEffect, useContext } from "react";
 import { useHistory } from "react-router-dom";
-import { idText } from "typescript";
 import RestaurantFinder from "../apis/RestaurantFinder";
 import { RestaurantsContext } from "../contexts/RestaurantsContexts";
 
@@ -9,6 +8,7 @@ interface RestaurantListProps {}
 export const RestaurantList: React.FC<RestaurantListProps> = ({}) => {
   const { restaurants, setRestaurants } = useContext(RestaurantsContext);
   let history = useHistory();
+  console.log(restaurants);
   useEffect(() => {
     (async function () {
       try {
@@ -20,7 +20,8 @@ export const RestaurantList: React.FC<RestaurantListProps> = ({}) => {
     })();
   }, []);
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (e: any, id: number) => {
+    e.stopPropagation();
     try {
       const response = await RestaurantFinder.delete(`/${id}`);
       setRestaurants(
@@ -33,8 +34,13 @@ export const RestaurantList: React.FC<RestaurantListProps> = ({}) => {
     }
   };
 
-  const handleUpdate = async (id: number) => {
+  const handleUpdate = async (e: any, id: number) => {
+    e.stopPropagation();
     history.push(`/restaurants/${id}/update`);
+  };
+
+  const handleRestaurantSelect = (id: number) => {
+    history.push(`restaurants/${id}`);
   };
 
   return (
@@ -54,14 +60,17 @@ export const RestaurantList: React.FC<RestaurantListProps> = ({}) => {
           {restaurants &&
             restaurants.map((restaurant: any) => {
               return (
-                <tr key={restaurant.id}>
+                <tr
+                  onClick={() => handleRestaurantSelect(restaurant.id)}
+                  key={restaurant.id}
+                >
                   <td>{restaurant.name}</td>
                   <td>{restaurant.location}</td>
                   <td>{"$".repeat(restaurant.price_range)}</td>
                   <td>reviews</td>
                   <td>
                     <button
-                      onClick={() => handleUpdate(restaurant.id)}
+                      onClick={(e) => handleUpdate(e, restaurant.id)}
                       className="btn btn-warning"
                     >
                       Update
@@ -69,7 +78,7 @@ export const RestaurantList: React.FC<RestaurantListProps> = ({}) => {
                   </td>
                   <td>
                     <button
-                      onClick={() => handleDelete(restaurant.id)}
+                      onClick={(e) => handleDelete(e, restaurant.id)}
                       className="btn btn-danger"
                     >
                       Delete
